@@ -10,6 +10,11 @@ For more information, see:
 * [How Submit a Feature Request](https://techdocs.ed-fi.org/display/ETKB/How+To%3A+Submit+a+Feature+Request)
 * Review on-going development work at [Tracker](https://tracker.ed-fi.org/browse/EXC)
 
+## Solutions
+
+* [PowerBI](PowerBI/readme.md)
+* [QuickSight](QuickSight/readme.md)
+
 ## Contributing
 
 The Ed-Fi Alliance welcomes code contributions from the community. Please read
