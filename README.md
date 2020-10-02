@@ -1,4 +1,4 @@
-# Ed-Fi-X-Data-Analytics
+# EWS-Starter-Kits
 
 Contains "starter kits" for creating business intelligence / data analytics solutions based on the Ed-Fi ODS.
 

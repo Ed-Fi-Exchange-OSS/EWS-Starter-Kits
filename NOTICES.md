@@ -1,4 +1,4 @@
-# Ed-Fi-X-Data-Analytics
+# EWS-Starter-Kits
 
 This product includes software developed at the [Ed-Fi
 Alliance](https://www.ed-fi.org).
