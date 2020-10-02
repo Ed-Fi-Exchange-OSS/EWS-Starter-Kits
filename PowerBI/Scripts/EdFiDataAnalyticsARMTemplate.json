@@ -1,0 +1,50 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "analysisServicesName": {
+            "type": "String"
+        },
+        "serverLocation": {
+            "type": "String"
+        },
+        "serverTier": {
+            "allowedValues": [
+                "D1",
+                "B1",
+                "B2",
+                "S0",
+                "S1",
+                "S2",
+                "S4"
+            ],
+            "type": "String"
+        },
+        "admin": {
+            "type": "String"
+        },
+        "managedMode": {
+            "type": "Int"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.AnalysisServices/servers",
+            "sku": {
+                "name": "[parameters('serverTier')]"
+            },
+            "name": "[parameters('analysisServicesName')]",
+            //"name": "[concat('edfianalytics', uniqueString(resourceGroup().id))]",
+            "apiVersion": "2016-05-16",
+            "location": "[parameters('serverLocation')]",
+            "properties": {
+                "asAdministrators": {
+                    "members": [
+                        "[parameters('admin')]"
+                    ]
+                },
+                "managedMode": "[parameters('managedMode')]"
+            }
+        }
+    ]
+}

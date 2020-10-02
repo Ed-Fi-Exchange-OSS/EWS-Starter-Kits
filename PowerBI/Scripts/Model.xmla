@@ -1,0 +1,2249 @@
+{
+  "createOrReplace": {
+    "object": {
+      "database": "Ed-Fi-Data-Analytics"
+    },
+    "database": {
+      "name": "Ed-Fi-Data-Analytics",
+      "compatibilityLevel": 1400,
+      "model": {
+        "culture": "en-US",
+        "dataSources": [
+          {
+            "type": "structured",
+            "name": "Enterprise ODS",
+            "connectionDetails": {
+              "protocol": "tds",
+              "address": {
+                "server": "{Azure SQL Server name}",
+                "database": "{Azure SQL database name}"
+              },
+              "authentication": null,
+              "query": null
+            },
+            "credential": {
+              "AuthenticationKind": "UsernamePassword",
+              "kind": "SQL",
+              "path": "{Azure SQL Server name};{Azure SQL database name}",
+              "Username": "{SQL username}",
+			  "Password": "{SQL password}",
+              "EncryptConnection": true
+            }
+          }
+        ],
+        "tables": [
+          {
+            "name": "Grading Period",
+            "columns": [
+              {
+                "name": "GradingPeriodKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodKey"
+              },
+              {
+                "name": "GradingPeriodBeginDateKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodBeginDateKey"
+              },
+              {
+                "name": "GradingPeriodEndDateKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodEndDateKey"
+              },
+              {
+                "name": "GradingPeriodDescription",
+                "dataType": "string",
+                "sourceColumn": "GradingPeriodDescription",
+                "sortByColumn": "GradingPeriodBeginDateKey"
+              },
+              {
+                "name": "TotalInstructionalDays",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "TotalInstructionalDays"
+              },
+              {
+                "name": "PeriodSequence",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "PeriodSequence"
+              },
+              {
+                "name": "LastModifiedDate",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "LastModifiedDate"
+              },
+              {
+                "name": "SchoolKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "SchoolKey"
+              },
+              {
+                "type": "calculated",
+                "name": "GradingPeriodBeginDate",
+                "dataType": "dateTime",
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "expression": " DATEVALUE(FORMAT(VALUE('Grading Period'[GradingPeriodBeginDateKey]), \"0000/00/00\"))",
+                "formatString": "Short Date",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+                  }
+                ]
+              },
+              {
+                "type": "calculated",
+                "name": "GradingPeriodEndDate",
+                "dataType": "dateTime",
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "expression": " DATEVALUE(FORMAT(VALUE('Grading Period'[GradingPeriodEndDateKey]), \"0000/00/00\"))",
+                "formatString": "Short Date",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+                  }
+                ]
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_GradingPeriodDimension = Source{[Schema=\"analytics\",Item=\"GradingPeriodDimension\"]}[Data],",
+                    "    #\"Filtered Rows\" = Table.SelectRows(analytics_GradingPeriodDimension, each ([GradingPeriodDescription] = \"Fifth Six Weeks\" or [GradingPeriodDescription] = \"First Six Weeks\" or [GradingPeriodDescription] = \"Fourth Six Weeks\" or [GradingPeriodDescription] = \"Second Six Weeks\" or [GradingPeriodDescription] = \"Sixth Six Weeks\" or [GradingPeriodDescription] = \"Third Six Weeks\"))",
+                    "in",
+                    "    #\"Filtered Rows\""
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "School",
+            "columns": [
+              {
+                "name": "SchoolKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "SchoolKey"
+              },
+              {
+                "name": "School Name",
+                "dataType": "string",
+                "sourceColumn": "SchoolName"
+              },
+              {
+                "name": "SchoolType",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "SchoolType"
+              },
+              {
+                "name": "LocalEducationAgencyName",
+                "dataType": "string",
+                "sourceColumn": "LocalEducationAgencyName"
+              },
+              {
+                "name": "LocalEducationAgencyKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "LocalEducationAgencyKey"
+              },
+              {
+                "name": "StateEducationAgencyName",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StateEducationAgencyName"
+              },
+              {
+                "name": "EducationServiceCenterName",
+                "dataType": "string",
+                "sourceColumn": "EducationServiceCenterName"
+              },
+              {
+                "name": "LastModifiedDate",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "LastModifiedDate"
+              },
+              {
+                "name": "StateEducationAgencyKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "StateEducationAgencyKey"
+              },
+              {
+                "name": "EducationServiceCenterKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "EducationServiceCenterKey"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_SchoolDimension = Source{[Schema=\"analytics\",Item=\"SchoolDimension\"]}[Data]",
+                    "in",
+                    "    analytics_SchoolDimension"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Student",
+            "columns": [
+              {
+                "name": "StudentKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "StudentKey"
+              },
+              {
+                "name": "StudentFirstName",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentFirstName"
+              },
+              {
+                "name": "StudentMiddleName",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentMiddleName"
+              },
+              {
+                "name": "StudentLastName",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentLastName"
+              },
+              {
+                "name": "SchoolKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "SchoolKey"
+              },
+              {
+                "name": "EnrollmentDate",
+                "dataType": "dateTime",
+                "sourceColumn": "EnrollmentDate"
+              },
+              {
+                "name": "GradeLevel",
+                "dataType": "string",
+                "sourceColumn": "GradeLevel"
+              },
+              {
+                "name": "LimitedEnglishProficiency",
+                "dataType": "string",
+                "sourceColumn": "LimitedEnglishProficiency"
+              },
+              {
+                "name": "IsEconomicallyDisadvantaged",
+                "dataType": "boolean",
+                "sourceColumn": "IsEconomicallyDisadvantaged"
+              },
+              {
+                "name": "IsEligibleForSchoolFoodService",
+                "dataType": "int64",
+                "sourceColumn": "IsEligibleForSchoolFoodService"
+              },
+              {
+                "name": "IsHispanic",
+                "dataType": "boolean",
+                "sourceColumn": "IsHispanic"
+              },
+              {
+                "name": "Sex",
+                "dataType": "string",
+                "sourceColumn": "Sex"
+              },
+              {
+                "name": "ContactName",
+                "dataType": "string",
+                "sourceColumn": "ContactName"
+              },
+              {
+                "name": "ContactRelationship",
+                "dataType": "string",
+                "sourceColumn": "ContactRelationship"
+              },
+              {
+                "name": "ContactAddress",
+                "dataType": "string",
+                "sourceColumn": "ContactAddress"
+              },
+              {
+                "name": "ContactMobilePhoneNumber",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "ContactMobilePhoneNumber"
+              },
+              {
+                "name": "ContactWorkPhoneNumber",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "ContactWorkPhoneNumber"
+              },
+              {
+                "name": "ContactEmailAddress",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "ContactEmailAddress"
+              },
+              {
+                "name": "LastModifiedDate",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "LastModifiedDate"
+              },
+              {
+                "type": "calculated",
+                "name": "Student Name",
+                "dataType": "string",
+                "isDataTypeInferred": true,
+                "expression": "TRIM(CONCATENATE(CONCATENATE(CONCATENATE(Student[StudentFirstName], \" \"), CONCATENATE(Student[StudentMiddleName],\" \")), Student[StudentLastName]))"
+              },
+              {
+                "type": "calculated",
+                "name": "EWS Status",
+                "dataType": "string",
+                "isDataTypeInferred": true,
+                "expression": "[Overall Status]"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_StudentDimension = Source{[Schema=\"analytics\",Item=\"StudentDimension\"]}[Data]",
+                    "in",
+                    "    analytics_StudentDimension"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Section",
+            "columns": [
+              {
+                "name": "StudentSectionKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentSectionKey"
+              },
+              {
+                "name": "StudentKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "StudentKey"
+              },
+              {
+                "name": "LocalCourseCode",
+                "dataType": "string",
+                "sourceColumn": "LocalCourseCode"
+              },
+              {
+                "name": "Subject",
+                "dataType": "string",
+                "sourceColumn": "Subject"
+              },
+              {
+                "name": "CourseTitle",
+                "dataType": "string",
+                "sourceColumn": "CourseTitle"
+              },
+              {
+                "name": "TeacherName",
+                "dataType": "string",
+                "sourceColumn": "TeacherName"
+              },
+              {
+                "name": "StudentSectionStartDateKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentSectionStartDateKey"
+              },
+              {
+                "name": "StudentSectionEndDateKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentSectionEndDateKey"
+              },
+              {
+                "name": "LastModifiedDate",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "LastModifiedDate"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_StudentSectionDimension = Source{[Schema=\"analytics\",Item=\"StudentSectionDimension\"]}[Data]",
+                    "in",
+                    "    analytics_StudentSectionDimension"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "UserAuthorization",
+            "isHidden": true,
+            "columns": [
+              {
+                "name": "UserKey",
+                "dataType": "int64",
+                "sourceColumn": "UserKey"
+              },
+              {
+                "name": "UserScope",
+                "dataType": "string",
+                "sourceColumn": "UserScope"
+              },
+              {
+                "name": "StudentPermission",
+                "dataType": "string",
+                "sourceColumn": "StudentPermission"
+              },
+              {
+                "name": "SectionPermission",
+                "dataType": "string",
+                "sourceColumn": "SectionPermission"
+              },
+              {
+                "name": "SchoolPermission",
+                "dataType": "string",
+                "sourceColumn": "SchoolPermission"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_UserAuthorization = Source{[Schema=\"analytics\",Item=\"UserAuthorization\"]}[Data]",
+                    "in",
+                    "    analytics_UserAuthorization"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "User",
+            "isHidden": true,
+            "columns": [
+              {
+                "name": "UserKey",
+                "dataType": "int64",
+                "sourceColumn": "UserKey"
+              },
+              {
+                "name": "UserEmail",
+                "dataType": "string",
+                "sourceColumn": "UserEmail"
+              },
+              {
+                "name": "LastModifiedDate",
+                "dataType": "dateTime",
+                "sourceColumn": "LastModifiedDate"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_UserDimension = Source{[Schema=\"analytics\",Item=\"UserDimension\"]}[Data]",
+                    "in",
+                    "    analytics_UserDimension"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "StudentEarlyWarningFact",
+            "isHidden": true,
+            "columns": [
+              {
+                "name": "StudentKey",
+                "dataType": "int64",
+                "sourceColumn": "StudentKey"
+              },
+              {
+                "name": "SchoolKey",
+                "dataType": "int64",
+                "sourceColumn": "SchoolKey"
+              },
+              {
+                "name": "DateKey",
+                "dataType": "string",
+                "sourceColumn": "DateKey"
+              },
+              {
+                "name": "IsInstructionalDay",
+                "dataType": "int64",
+                "sourceColumn": "IsInstructionalDay"
+              },
+              {
+                "name": "IsEnrolled",
+                "dataType": "int64",
+                "sourceColumn": "IsEnrolled"
+              },
+              {
+                "name": "IsAbsentFromSchoolExcused",
+                "dataType": "int64",
+                "sourceColumn": "IsAbsentFromSchoolExcused"
+              },
+              {
+                "name": "IsAbsentFromSchoolUnexcused",
+                "dataType": "int64",
+                "sourceColumn": "IsAbsentFromSchoolUnexcused"
+              },
+              {
+                "name": "IsTardyToSchool",
+                "dataType": "int64",
+                "sourceColumn": "IsTardyToSchool"
+              },
+              {
+                "name": "IsAbsentFromHomeroomExcused",
+                "dataType": "int64",
+                "sourceColumn": "IsAbsentFromHomeroomExcused"
+              },
+              {
+                "name": "IsAbsentFromHomeroomUnexcused",
+                "dataType": "int64",
+                "sourceColumn": "IsAbsentFromHomeroomUnexcused"
+              },
+              {
+                "name": "IsTardyToHomeroom",
+                "dataType": "int64",
+                "sourceColumn": "IsTardyToHomeroom"
+              },
+              {
+                "name": "IsAbsentFromAnyClassExcused",
+                "dataType": "int64",
+                "sourceColumn": "IsAbsentFromAnyClassExcused"
+              },
+              {
+                "name": "IsAbsentFromAnyClassUnexcused",
+                "dataType": "int64",
+                "sourceColumn": "IsAbsentFromAnyClassUnexcused"
+              },
+              {
+                "name": "IsTardyToAnyClass",
+                "dataType": "int64",
+                "sourceColumn": "IsTardyToAnyClass"
+              },
+              {
+                "name": "CountByDayOfStateOffenses",
+                "dataType": "int64",
+                "sourceColumn": "CountByDayOfStateOffenses"
+              },
+              {
+                "name": "CountByDayOfConductOffenses",
+                "dataType": "int64",
+                "sourceColumn": "CountByDayOfConductOffenses"
+              },
+              {
+                "type": "calculated",
+                "name": "GradingPeriodKey",
+                "dataType": "string",
+                "isDataTypeInferred": true,
+                "expression": [
+                  "",
+                  "CALCULATE (",
+                  "    MAX( GradingPeriodLookup[GradingPeriodKey] ),",
+                  "    FILTER (",
+                  "        GradingPeriodLookup,",
+                  "       GradingPeriodLookup[SchoolKey] = 'StudentEarlyWarningFact'[SchoolKey]",
+                  "            && GradingPeriodLookup[GradingPeriodBeginDateKey] <= 'StudentEarlyWarningFact'[DateKey]",
+                  "            && GradingPeriodLookup[GradingPeriodEndDateKey]   >= 'StudentEarlyWarningFact'[DateKey]",
+                  "    )",
+                  ")"
+                ]
+              },
+              {
+                "name": "IsPresentSchool",
+                "dataType": "int64",
+                "sourceColumn": "IsPresentSchool"
+              },
+              {
+                "name": "IsPresentHomeroom",
+                "dataType": "int64",
+                "sourceColumn": "IsPresentHomeroom"
+              },
+              {
+                "name": "IsPresentAnyClass",
+                "dataType": "int64",
+                "sourceColumn": "IsPresentAnyClass"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_StudentEarlyWarningFact = Source{[Schema=\"analytics\",Item=\"StudentEarlyWarningFact\"]}[Data]",
+                    "in",
+                    "    analytics_StudentEarlyWarningFact"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "StudentSectionGradeFact",
+            "isHidden": true,
+            "columns": [
+              {
+                "name": "StudentKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "StudentKey"
+              },
+              {
+                "name": "SchoolKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "SchoolKey"
+              },
+              {
+                "name": "GradingPeriodKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodKey"
+              },
+              {
+                "name": "StudentSectionKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "StudentSectionKey"
+              },
+              {
+                "name": "SectionKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "SectionKey"
+              },
+              {
+                "name": "NumericGradeEarned",
+                "dataType": "double",
+                "isHidden": true,
+                "sourceColumn": "NumericGradeEarned"
+              },
+              {
+                "type": "calculated",
+                "name": "GradingPeriodBeginDateKey",
+                "dataType": "string",
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "expression": "MID('StudentSectionGradeFact'[GradingPeriodKey],14,8)"
+              },
+              {
+                "type": "calculated",
+                "name": "GradingPeriodBeginDate",
+                "dataType": "dateTime",
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "expression": " DATEVALUE(FORMAT(VALUE('StudentSectionGradeFact'[GradingPeriodBeginDateKey]), \"0000/00/00\"))",
+                "formatString": "Short Date",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+                  }
+                ]
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_StudentSectionGradeFact = Source{[Schema=\"analytics\",Item=\"StudentSectionGradeFact\"]}[Data]",
+                    "in",
+                    "    analytics_StudentSectionGradeFact"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "GradingPeriodLookup",
+            "isHidden": true,
+            "columns": [
+              {
+                "name": "GradingPeriodKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodKey"
+              },
+              {
+                "name": "GradingPeriodBeginDateKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodBeginDateKey"
+              },
+              {
+                "name": "GradingPeriodEndDateKey",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "GradingPeriodEndDateKey"
+              },
+              {
+                "name": "SchoolKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "SchoolKey"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_GradingPeriodDimension = Source{[Schema=\"analytics\",Item=\"GradingPeriodDimension\"]}[Data],",
+                    "    #\"Filtered Rows\" = Table.SelectRows(analytics_GradingPeriodDimension, each ([GradingPeriodDescription] = \"Fifth Six Weeks\" or [GradingPeriodDescription] = \"First Six Weeks\" or [GradingPeriodDescription] = \"Fourth Six Weeks\" or [GradingPeriodDescription] = \"Second Six Weeks\" or [GradingPeriodDescription] = \"Sixth Six Weeks\" or [GradingPeriodDescription] = \"Third Six Weeks\")),",
+                    "    #\"Removed Columns\" = Table.RemoveColumns(#\"Filtered Rows\",{\"GradingPeriodDescription\", \"TotalInstructionalDays\", \"PeriodSequence\", \"LastModifiedDate\"})",
+                    "in",
+                    "    #\"Removed Columns\""
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Measures-EWS",
+            "columns": [
+              {
+                "type": "calculatedTableColumn",
+                "name": "StudentEarlyWarningFact_SchoolKey",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "StudentEarlyWarningFact[SchoolKey]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "StudentEarlyWarningFact_StudentKey",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "StudentEarlyWarningFact[StudentKey]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "StudentEarlyWarningFact_GradingPeriodKey",
+                "dataType": "string",
+                "isNameInferred": true,
+                "isDataTypeInferred": false,
+                "isHidden": true,
+                "sourceColumn": "StudentEarlyWarningFact[GradingPeriodKey]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "DaysEnrolled",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[DaysEnrolled]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "StateOffenses",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[StateOffenses]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "CodeOfConductOffenses",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[CodeOfConductOffenses]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "IsAbsentFromHomeroomExcused",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[IsAbsentFromHomeroomExcused]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "IsAbsentFromSchoolExcused",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[IsAbsentFromSchoolExcused]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "IsAbsentFromHomeroomUnexcused",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[IsAbsentFromHomeroomUnexcused]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "IsAbsentFromSchoolUnexcused",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[IsAbsentFromSchoolUnexcused]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "IsTardyToHomeroom",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[IsTardyToHomeroom]"
+              },
+              {
+                "type": "calculatedTableColumn",
+                "name": "IsTardyToSchool",
+                "dataType": "int64",
+                "isNameInferred": true,
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "sourceColumn": "[IsTardyToSchool]"
+              },
+              {
+                "type": "calculated",
+                "name": "GradingPeriodBeginDate",
+                "dataType": "dateTime",
+                "isDataTypeInferred": true,
+                "isHidden": true,
+                "expression": "LOOKUPVALUE('Grading Period'[GradingPeriodBeginDate],'Grading Period'[GradingPeriodKey],'Measures-EWS'[StudentEarlyWarningFact_GradingPeriodKey])",
+                "formatString": "Short Date",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+                  }
+                ]
+              }
+            ],
+            "partitions": [
+              {
+                "name": "CalculatedTable 3",
+                "source": {
+                  "type": "calculated",
+                  "expression": [
+                    "",
+                    "GROUPBY (",
+                    "    FILTER (",
+                    "        'StudentEarlyWarningFact',",
+                    "        'StudentEarlyWarningFact'[IsInstructionalDay] = 1",
+                    "    ),",
+                    "    'StudentEarlyWarningFact'[SchoolKey],",
+                    "    'StudentEarlyWarningFact'[StudentKey],",
+                    "    'StudentEarlyWarningFact'[GradingPeriodKey],",
+                    "    \"DaysEnrolled\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsEnrolled] ),",
+                    "    \"IsAbsentFromHomeroomExcused\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsAbsentFromHomeroomExcused] ),",
+                    "    \"IsAbsentFromSchoolExcused\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsAbsentFromSchoolExcused]),",
+                    "    \"IsAbsentFromHomeroomUnexcused\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsAbsentFromHomeroomUnexcused] ),",
+                    "    \"IsAbsentFromSchoolUnexcused\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsAbsentFromSchoolUnexcused] ),",
+                    "    \"IsTardyToHomeroom\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsTardyToHomeroom] ),",
+                    "    \"IsTardyToSchool\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[IsTardyToSchool] ),",
+                    "    \"StateOffenses\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[CountByDayOfStateOffenses] ),",
+                    "    \"CodeOfConductOffenses\", SUMX ( CURRENTGROUP (), 'StudentEarlyWarningFact'[CountByDayOfConductOffenses] )",
+                    ")"
+                  ]
+                }
+              }
+            ],
+            "measures": [
+              {
+                "name": "Days Enrolled",
+                "expression": [
+                  "",
+                  "SUM('Measures-EWS'[DaysEnrolled])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Days Absent",
+                "expression": [
+                  "",
+                  "[Days Absent-Excused]+[Days Absent-Unexcused]"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Days Absent-Unexcused",
+                "expression": [
+                  "",
+                  "SUM('Measures-EWS'[IsAbsentFromHomeroomUnexcused])+SUM('Measures-EWS'[IsAbsentFromSchoolUnexcused])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Days Absent-Excused",
+                "expression": [
+                  "",
+                  "SUM('Measures-EWS'[IsAbsentFromHomeroomExcused])+SUM('Measures-EWS'[IsAbsentFromSchoolExcused])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Attendance Rate",
+                "expression": [
+                  "",
+                  "DIVIDE( [Days Enrolled]- [Days Absent], [Days Enrolled],BLANK())"
+                ],
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Tardies",
+                "expression": [
+                  "",
+                  "",
+                  "SUM('Measures-EWS'[IsTardyToHomeroom])+SUM('Measures-EWS'[IsTardyToSchool])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Overall Grade",
+                "expression": [
+                  "",
+                  "",
+                  "    AVERAGE ( 'StudentSectionGradeFact'[NumericGradeEarned] )"
+                ],
+                "formatString": "0.0"
+              },
+              {
+                "name": "Overall Grade (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Overall Grade],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )"
+                ],
+                "formatString": "0.0"
+              },
+              {
+                "name": "Math Grade",
+                "expression": [
+                  "",
+                  "CALCULATE (",
+                  "    [Overall Grade],",
+                  "    FILTER (",
+                  "        Section,",
+                  "        Section[Subject] = \"Mathematics\"",
+                  "    )",
+                  ")"
+                ],
+                "formatString": "0.0"
+              },
+              {
+                "name": "Math Grade (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Math Grade],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )"
+                ],
+                "formatString": "0.0"
+              },
+              {
+                "name": "English Grade",
+                "expression": [
+                  "",
+                  "",
+                  "    CALCULATE (",
+                  "        [Overall Grade],",
+                  "        FILTER (",
+                  "            Section,",
+                  "            Section[Subject] IN { \"English Language Arts\", \"Reading\", \"Writing\" }",
+                  "        )",
+                  "    )",
+                  ""
+                ],
+                "formatString": "0.0"
+              },
+              {
+                "name": "English Grade (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [English Grade],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )"
+                ],
+                "formatString": "0.0"
+              },
+              {
+                "name": "Days Enrolled (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Days Enrolled],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Days Absent (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "[Days Absent-Excused (Current)]+[Days Absent-Unexcused (Current)]"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Days Absent-Excused (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Days Absent-Excused],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  ""
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Days Absent-Unexcused (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "",
+                  "    CALCULATE (",
+                  "        [Days Absent-Unexcused],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  ""
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Tardies (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Tardies],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Attendance Rate (Current)",
+                "expression": [
+                  "",
+                  "DIVIDE( [Days Enrolled (Current)]- [Days Absent (Current)], [Days Enrolled (Current)],BLANK())"
+                ],
+                "formatString": "#,0.0%;-#,0.0%;#,0.0%",
+                "kpi": {
+                  "targetExpression": "1",
+                  "targetFormatString": "#,0.0%;-#,0.0%;#,0.0%",
+                  "statusGraphic": "Traffic Light - Single",
+                  "statusExpression": [
+                    "var x='Measures-EWS'[Attendance Rate (Current)] return",
+                    "            if(ISBLANK(x),BLANK(),",
+                    "                    If(x<0.8,-1,",
+                    "\t                If(x<0.88,0,1)",
+                    "                )",
+                    "            )",
+                    "            "
+                  ],
+                  "annotations": [
+                    {
+                      "name": "GoalType",
+                      "value": "StaticValue"
+                    },
+                    {
+                      "name": "KpiStatusType",
+                      "value": "Linear"
+                    },
+                    {
+                      "name": "KpiThresholdType",
+                      "value": "Absolute"
+                    },
+                    {
+                      "name": "KpiThresholdOrdering",
+                      "value": "Ascending"
+                    },
+                    {
+                      "name": "KpiThresholdCount",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_0",
+                      "value": "0.8"
+                    },
+                    {
+                      "name": "KpiThreshold_1",
+                      "value": "0.88"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "AttendanceIndicatorCode",
+                "expression": [
+                  "",
+                  "VAR AtRisk = .8",
+                  "VAR EarlyWarning = .88",
+                  "VAR Metric = [Attendance Rate]",
+                  "VAR AI =",
+                  "    IF (",
+                  "        NOT ISBLANK ( Metric ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            Metric < AtRisk, 2,",
+                  "            Metric > AtRisk",
+                  "                && Metric\t <  EarlyWarning, 1,",
+                  "            0",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )",
+                  "RETURN",
+                  "    AI"
+                ]
+              },
+              {
+                "name": "Attendance Status",
+                "expression": [
+                  "",
+                  "VAR AttendanceAtRisk = .8",
+                  "VAR AttendanceEarlyWarning = .88",
+                  "RETURN",
+                  "    IF (",
+                  "        NOT ISBLANK ( [Attendance Rate] ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            [Attendance Rate]< AttendanceAtRisk, \"At Risk\",",
+                  "            [Attendance Rate] > AttendanceAtRisk",
+                  "                && [Attendance Rate]\t< AttendanceEarlyWarning, \"Early Warning\",",
+                  "            \"On Track\"",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "AttendanceIndicatorCodeCurrent",
+                "expression": [
+                  "",
+                  "VAR AttendanceAtRisk = .8",
+                  "VAR AttendanceEarlyWarning = .88",
+                  "",
+                  "VAR AI =",
+                  "    IF (",
+                  "        NOT ISBLANK ( [Attendance Rate (Current)] ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            [Attendance Rate (Current)] < AttendanceAtRisk, 2,",
+                  "            [Attendance Rate (Current)] > AttendanceAtRisk",
+                  "                && [Attendance Rate (Current)] < AttendanceEarlyWarning, 1,",
+                  "            0",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )",
+                  "RETURN",
+                  "    AI"
+                ]
+              },
+              {
+                "name": "Attendance Status (Current)",
+                "expression": [
+                  "",
+                  "VAR AttendanceAtRisk = .8",
+                  "VAR AttendanceEarlyWarning = .88",
+                  "RETURN",
+                  "    IF (",
+                  "        NOT ISBLANK ( [Attendance Rate (Current)] ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            [Attendance Rate (Current)] < AttendanceAtRisk, \"At Risk\",",
+                  "            [Attendance Rate (Current)] > AttendanceAtRisk",
+                  "                && [Attendance Rate (Current)] < AttendanceEarlyWarning, \"Early Warning\",",
+                  "            \"On Track\"",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "State Offenses",
+                "expression": [
+                  "",
+                  "SUM('Measures-EWS'[StateOffenses])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "State Offenses (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "",
+                  "    CALCULATE (",
+                  "        [State Offenses],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  ""
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "CoC Offenses",
+                "expression": [
+                  "",
+                  "SUM('Measures-EWS'[CodeOfConductOffenses])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "CoC Offenses (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "",
+                  "    CALCULATE (",
+                  "        [CoC Offenses],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  ""
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Behavior Incidents",
+                "expression": "[State Offenses]+[CoC Offenses]"
+              },
+              {
+                "name": "Behavior",
+                "expression": [
+                  "",
+                  "VAR OffenseAtRisk = 0",
+                  "VAR ConductAtRisk = 5",
+                  "VAR ConductEarlyWarning = 2",
+                  "RETURN",
+                  "    IF (",
+                  "        AND(NOT ISBLANK (  [State Offenses]),NOT ISBLANK ( [CoC Offenses]) ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            OR ([State Offenses] > OffenseAtRisk, [CoC Offenses]> ConductAtRisk ), 2,",
+                  "            [CoC Offenses] > ConductEarlyWarning, 1,",
+                  "            0",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Behavior Incidents (Current)",
+                "expression": "[State Offenses (current)]+[CoC Offenses (current)]"
+              },
+              {
+                "name": "Behavior (Current)",
+                "expression": [
+                  "",
+                  "VAR OffenseAtRisk = 0",
+                  "VAR ConductAtRisk = 5",
+                  "VAR ConductEarlyWarning = 2",
+                  "RETURN",
+                  "    IF (",
+                  "        AND(NOT ISBLANK (  [State Offenses (current)]),NOT ISBLANK ( [CoC Offenses (current)]) ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            OR ([State Offenses (current)] > OffenseAtRisk, [CoC Offenses (current)]> ConductAtRisk ), 2,",
+                  "            [CoC Offenses (current)] > ConductEarlyWarning, 1,",
+                  "            0",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ],
+                "kpi": {
+                  "targetExpression": "0",
+                  "statusGraphic": "Traffic Light - Single",
+                  "statusExpression": [
+                    "var x='Measures-EWS'[Behavior (Current)] return",
+                    "            if(ISBLANK(x),BLANK(),",
+                    "                    If(x<1,1,",
+                    "\t                If(x<2,0,-1)",
+                    "                )",
+                    "            )",
+                    "            "
+                  ],
+                  "annotations": [
+                    {
+                      "name": "GoalType",
+                      "value": "StaticValue"
+                    },
+                    {
+                      "name": "KpiStatusType",
+                      "value": "Linear"
+                    },
+                    {
+                      "name": "KpiThresholdType",
+                      "value": "Absolute"
+                    },
+                    {
+                      "name": "KpiThresholdOrdering",
+                      "value": "Descending"
+                    },
+                    {
+                      "name": "KpiThresholdCount",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_0",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_1",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Behavior Status (Current)",
+                "expression": [
+                  "",
+                  "VAR OffenseAtRisk = 0",
+                  "VAR ConductAtRisk = 5",
+                  "VAR ConductEarlyWarning = 2",
+                  "RETURN",
+                  "    IF (",
+                  "        AND (",
+                  "            NOT ISBLANK ( [State Offenses (current)] ),",
+                  "            NOT ISBLANK ( [CoC Offenses (current)] )",
+                  "        ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            OR (",
+                  "                [State Offenses (current)] > OffenseAtRisk,",
+                  "                [CoC Offenses (current)] > ConductAtRisk",
+                  "            ), \"At Risk\",",
+                  "            [CoC Offenses (current)] > ConductEarlyWarning, \"Early Warning\",",
+                  "            \"On Track\"",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Behavior Status",
+                "expression": [
+                  "",
+                  "VAR OffenseAtRisk = 0",
+                  "VAR ConductAtRisk = 5",
+                  "VAR ConductEarlyWarning = 2",
+                  "RETURN",
+                  "    IF (",
+                  "        AND (",
+                  "            NOT ISBLANK ( [State Offenses] ),",
+                  "            NOT ISBLANK ( [CoC Offenses] )",
+                  "        ),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            OR (",
+                  "                [State Offenses] > OffenseAtRisk,",
+                  "                [CoC Offenses] > ConductAtRisk",
+                  "            ), \"At Risk\",",
+                  "            [CoC Offenses] > ConductEarlyWarning, \"Early Warning\",",
+                  "            \"On Track\"",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Math Indicator",
+                "expression": [
+                  "",
+                  "VAR AtRiskThreshold = 65",
+                  "VAR EarlyWarningThreshold = 72",
+                  "",
+                  "RETURN",
+                  "    IF (",
+                  "        ISBLANK ([Math Grade] ),",
+                  "        BLANK (),",
+                  "        IF ( [Math Grade] < AtRiskThreshold, 2, IF ( [Math Grade] < EarlyWarningThreshold, 1, 0 ) )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "English Indicator",
+                "expression": [
+                  "",
+                  "VAR AtRiskThreshold = 65",
+                  "VAR EarlyWarningThreshold = 72",
+                  "VAR Grade = [English Grade]",
+                  "RETURN",
+                  "    IF (",
+                  "        ISBLANK ( [English Grade]),",
+                  "        BLANK (),",
+                  "        IF (  [English Grade] < AtRiskThreshold, 2, IF (  [English Grade] < EarlyWarningThreshold, 1, 0 ) )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Grade Indicator",
+                "expression": [
+                  "",
+                  "VAR EnglishGradeWarningFlag = [English Indicator]",
+                  "VAR MathGradeWarningFlag = [Math Indicator]",
+                  "RETURN",
+                  "    IF (",
+                  "        ISBLANK ( [English Indicator] ) ",
+                  "\t&& ISBLANK ([Math Indicator] ),",
+                  "        BLANK (),",
+                  "        MAX ( [English Indicator], [Math Indicator] )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Math Indicator (Current)",
+                "expression": [
+                  "",
+                  "VAR AtRiskThreshold = 65",
+                  "VAR EarlyWarningThreshold = 72",
+                  "",
+                  "RETURN",
+                  "    IF (",
+                  "        ISBLANK ([Math Grade (Current)] ),",
+                  "        BLANK (),",
+                  "        IF ( [Math Grade (Current)] < AtRiskThreshold, 2, IF ( [Math Grade (Current)] < EarlyWarningThreshold, 1, 0 ) )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Grade Status",
+                "expression": [
+                  "",
+                  "VAR AtRisk = 2",
+                  "VAR EarlyWarning = 1",
+                  "RETURN",
+                  "    IF (",
+                  "        NOT ISBLANK ( [Grade Indicator]),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "           [Grade Indicator] = AtRisk, \"At Risk\",",
+                  "            [Grade Indicator] = EarlyWarning, \"Early Warning\",",
+                  "            \"On Track\"",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "English Indicator (Current)",
+                "expression": [
+                  "",
+                  "VAR AtRiskThreshold = 65",
+                  "VAR EarlyWarningThreshold = 72",
+                  "VAR Grade = [English Grade (Current)]",
+                  "RETURN",
+                  "    IF (",
+                  "        ISBLANK ( [English Grade (Current)]),",
+                  "        BLANK (),",
+                  "        IF (  [English Grade (Current)] < AtRiskThreshold, 2, IF (  [English Grade (Current)] < EarlyWarningThreshold, 1, 0 ) )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Grade Indicator (Current)",
+                "expression": [
+                  "",
+                  "VAR EnglishGradeWarningFlag = [English Indicator (Current)]",
+                  "VAR MathGradeWarningFlag = [Math Indicator (Current)]",
+                  "RETURN",
+                  "    IF (",
+                  "        ISBLANK ( [English Indicator (Current)] ) ",
+                  "\t&& ISBLANK ([Math Indicator (Current)] ),",
+                  "        BLANK (),",
+                  "        MAX ( [English Indicator (Current)], [Math Indicator (Current)] )",
+                  "    )"
+                ],
+                "kpi": {
+                  "targetExpression": "0",
+                  "statusGraphic": "Traffic Light - Single",
+                  "statusExpression": [
+                    "var x='Measures-EWS'[Grade Indicator (Current)] return",
+                    "            if(ISBLANK(x),BLANK(),",
+                    "                    If(x<1,1,",
+                    "\t                If(x<2,0,-1)",
+                    "                )",
+                    "            )",
+                    "            "
+                  ],
+                  "annotations": [
+                    {
+                      "name": "GoalType",
+                      "value": "StaticValue"
+                    },
+                    {
+                      "name": "KpiStatusType",
+                      "value": "Linear"
+                    },
+                    {
+                      "name": "KpiThresholdType",
+                      "value": "Absolute"
+                    },
+                    {
+                      "name": "KpiThresholdOrdering",
+                      "value": "Descending"
+                    },
+                    {
+                      "name": "KpiThresholdCount",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_0",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_1",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Grade Status (Current)",
+                "expression": [
+                  "",
+                  "VAR AtRisk = 2",
+                  "VAR EarlyWarning = 1",
+                  "RETURN",
+                  "    IF (",
+                  "        NOT ISBLANK ( [Grade Indicator (Current)]),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "           [Grade Indicator (Current)] = AtRisk, \"At Risk\",",
+                  "            [Grade Indicator (Current)] = EarlyWarning, \"Early Warning\",",
+                  "            \"On Track\"",
+                  "        ),",
+                  "        BLANK ()",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Overall Indicator",
+                "expression": [
+                  "",
+                  "VAR AI = [AttendanceIndicatorCode]",
+                  "VAR BI = [Behavior]",
+                  "VAR GI = [Grade Indicator]",
+                  "VAR AtRisk =",
+                  "    IF (",
+                  "        AND ( AND (ISBLANK ( AI ), ISBLANK ( BI ) ), ISBLANK ( GI ) ),",
+                  "        BLANK (),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            OR ( OR ( AI = 2, BI = 2 ), GI = 2 ), 2,",
+                  "            OR ( OR ( AI = 1, BI = 1 ), GI = 1 ), 1,",
+                  "            0",
+                  "        )",
+                  "    )",
+                  "RETURN",
+                  "    AtRisk"
+                ],
+                "kpi": {
+                  "targetExpression": "0",
+                  "statusGraphic": "Traffic Light - Single",
+                  "statusExpression": [
+                    "var x='Measures-EWS'[Overall Indicator] return",
+                    "            if(ISBLANK(x),BLANK(),",
+                    "                    If(x<1,1,",
+                    "\t                If(x<2,0,-1)",
+                    "                )",
+                    "            )",
+                    "            "
+                  ],
+                  "annotations": [
+                    {
+                      "name": "GoalType",
+                      "value": "StaticValue"
+                    },
+                    {
+                      "name": "KpiStatusType",
+                      "value": "Linear"
+                    },
+                    {
+                      "name": "KpiThresholdType",
+                      "value": "Absolute"
+                    },
+                    {
+                      "name": "KpiThresholdOrdering",
+                      "value": "Descending"
+                    },
+                    {
+                      "name": "KpiThresholdCount",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_0",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_1",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Overall Status",
+                "expression": [
+                  "",
+                  "VAR Metric = [Overall Indicator]",
+                  "RETURN",
+                  "    IF (",
+                  "        NOT ISBLANK ( Metric ),",
+                  "        SWITCH (",
+                  "            TRUE (),",
+                  "            Metric = 2, \"At Risk\",",
+                  "            Metric = 1, \"Early Warning\",",
+                  "            Metric = 0, \"On Track\"",
+                  "        )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Overall Indicator (Current)",
+                "expression": [
+                  "",
+                  "VAR AI = [AttendanceIndicatorCodeCurrent]",
+                  "VAR BI =  [Behavior (Current)]",
+                  "VAR GI = [Grade Indicator (Current)]",
+                  "VAR AtRisk =",
+                  "    IF (",
+                  "        AND ( AND (ISBLANK ( AI ), ISBLANK ( BI ) ), ISBLANK ( GI ) ),",
+                  "        BLANK (),",
+                  "        SWITCH (",
+                  "            TRUE,",
+                  "            OR ( OR ( AI = 2, BI = 2 ), GI = 2 ), 2,",
+                  "            OR ( OR ( AI = 1, BI = 1 ), GI = 1 ), 1,",
+                  "            0",
+                  "        )",
+                  "    )",
+                  "RETURN",
+                  "    AtRisk"
+                ],
+                "kpi": {
+                  "targetExpression": "0",
+                  "statusGraphic": "Traffic Light - Single",
+                  "statusExpression": [
+                    "var x='Measures-EWS'[Overall Indicator (Current)] return",
+                    "            if(ISBLANK(x),BLANK(),",
+                    "                    If(x<1,1,",
+                    "\t                If(x<2,0,-1)",
+                    "                )",
+                    "            )",
+                    "            "
+                  ],
+                  "annotations": [
+                    {
+                      "name": "GoalType",
+                      "value": "StaticValue"
+                    },
+                    {
+                      "name": "KpiStatusType",
+                      "value": "Linear"
+                    },
+                    {
+                      "name": "KpiThresholdType",
+                      "value": "Absolute"
+                    },
+                    {
+                      "name": "KpiThresholdOrdering",
+                      "value": "Descending"
+                    },
+                    {
+                      "name": "KpiThresholdCount",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_0",
+                      "value": "2"
+                    },
+                    {
+                      "name": "KpiThreshold_1",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Overall Status (Current)",
+                "expression": [
+                  "",
+                  "VAR Metric = [Overall Indicator (Current)]",
+                  "RETURN",
+                  "    IF (",
+                  "        NOT ISBLANK ( Metric ),",
+                  "        SWITCH (",
+                  "            TRUE (),",
+                  "            Metric = 2, \"At Risk\",",
+                  "            Metric = 1, \"Early Warning\",",
+                  "            Metric = 0, \"On Track\"",
+                  "        )",
+                  "    )"
+                ]
+              },
+              {
+                "name": "Students Enrolled",
+                "expression": [
+                  "",
+                  "DISTINCTCOUNT('Measures-EWS'[StudentEarlyWarningFact_StudentKey])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Students Enrolled (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Students Enrolled],",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Students On Track (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "VAR Threshold = 0",
+                  "VAR Metric =",
+                  "    CALCULATE (",
+                  "        CALCULATE (",
+                  "    [Students Enrolled (Current)],",
+                  "    FILTER ( Student,[Overall Indicator]=Threshold )",
+                  "),",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  "RETURN",
+                  "IF(ISBLANK(Metric),0,Metric)"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Students Early Warning (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "VAR Threshold = 1",
+                  "VAR Metric =",
+                  "    CALCULATE (",
+                  "        CALCULATE (",
+                  "    [Students Enrolled (Current)],",
+                  "    FILTER ( Student,[Overall Indicator]=Threshold )",
+                  "),",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  "RETURN",
+                  "IF(ISBLANK(Metric),0,Metric)"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Students At Risk (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "VAR Threshold = 2",
+                  "VAR Metric =",
+                  "    CALCULATE (",
+                  "        CALCULATE (",
+                  "    [Students Enrolled (Current)],",
+                  "     FILTER ( Student,[Overall Indicator]=Threshold )",
+                  "),",
+                  "            FILTER (",
+                  "                'Grading Period',",
+                  "                'Grading Period'[GradingPeriodBeginDate]",
+                  "                    = MAX ( 'StudentSectionGradeFact'[GradingPeriodBeginDate] )",
+                  "            )",
+                  "        )",
+                  "RETURN",
+                  "IF(ISBLANK(Metric),0,Metric)"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Percentage of Students On Track (Current)",
+                "expression": [
+                  "",
+                  " DIVIDE([Students On Track (Current)], [Students Enrolled (Current)], 0)"
+                ],
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Percentage of Students Early Warning (Current)",
+                "expression": [
+                  "",
+                  " DIVIDE([Students Early Warning (Current)], [Students Enrolled (Current)], 0)"
+                ],
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Percentage of Students At Risk (Current)",
+                "expression": [
+                  "",
+                  " DIVIDE([Students At Risk (Current)], [Students Enrolled (Current)], 0)"
+                ],
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Students At Risk",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "VAR Threshold = 2",
+                  "VAR Metric = ",
+                  "CALCULATE (",
+                  "    [Students Enrolled],",
+                  "    FILTER ( Student,[Overall Indicator]=Threshold )",
+                  ")",
+                  "RETURN",
+                  "IF(ISBLANK(Metric),0,Metric)",
+                  "        "
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Percentage of Students At Risk",
+                "expression": [
+                  "",
+                  " DIVIDE([Students At Risk], [Students Enrolled], 0)"
+                ],
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Students Early Warning",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "VAR Threshold = 1",
+                  "VAR Metric = ",
+                  "CALCULATE (",
+                  "    [Students Enrolled],",
+                  "    FILTER ( Student,[Overall Indicator]=Threshold )",
+                  ")",
+                  "RETURN",
+                  "IF(ISBLANK(Metric),0,Metric)"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Percentage of Students Early Warning",
+                "expression": [
+                  "",
+                  " DIVIDE([Students Early Warning], [Students Enrolled], 0)"
+                ],
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Students On Track",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "VAR Threshold = 0",
+                  "VAR Metric = ",
+                  "CALCULATE (",
+                  "    [Students Enrolled],",
+                  "    FILTER ( Student,[Overall Indicator]=Threshold )",
+                  ")",
+                  "RETURN",
+                  "IF(ISBLANK(Metric),0,Metric)  "
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Copy of Overall Status",
+                "expression": [
+                  "",
+                  "IF(NOT ISBLANK([Overall Indicator] ),",
+                  "SWITCH (",
+                  "    TRUE (),",
+                  "    [Overall Indicator] = 2, \"At Risk\",",
+                  "    [Overall Indicator] = 1, \"Early Warning\",",
+                  "    [Overall Indicator] = 0, \"On Track\"",
+                  "))"
+                ]
+              },
+              {
+                "name": "Students Enrolled Total",
+                "expression": [
+                  "",
+                  "COUNTA('Measures-EWS'[StudentEarlyWarningFact_StudentKey])"
+                ],
+                "formatString": "#,0"
+              },
+              {
+                "name": "Copy of Students Enrolled (Current)",
+                "expression": [
+                  "",
+                  "/* Depends on 'Grading Period' not containing grading periods beyond the current grading period */",
+                  "    CALCULATE (",
+                  "        [Students Enrolled],",
+                  "            CALCULATETABLE (",
+                  "    VALUES ( 'Measures-EWS'[StudentEarlyWarningFact_GradingPeriodKey] ),",
+                  "    FILTER (",
+                  "        GradingPeriodLookup,",
+                  "        GradingPeriodLookup[GradingPeriodBeginDateKey]",
+                  "            = MAX ( GradingPeriodLookup[GradingPeriodBeginDateKey] )",
+                  "            && GradingPeriodLookup[SchoolKey]",
+                  "                = MAX ( 'Measures-EWS'[StudentEarlyWarningFact_SchoolKey] )",
+                  "    ),",
+                  "    ALLEXCEPT( 'Grading Period', 'Grading Period'[GradingPeriodDescription] )",
+                  ")",
+                  "        )"
+                ],
+                "formatString": "#,0"
+              }
+            ]
+          },
+          {
+            "name": "StudentDataAuthorization",
+            "isHidden": true,
+            "columns": [
+              {
+                "name": "StudentKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "StudentKey"
+              },
+              {
+                "name": "SchoolKey",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "SchoolKey"
+              },
+              {
+                "name": "BeginDate",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "BeginDate"
+              },
+              {
+                "name": "EndDate",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "EndDate"
+              },
+              {
+                "name": "SectionId",
+                "dataType": "string",
+                "isHidden": true,
+                "sourceColumn": "SectionId"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"Enterprise ODS\",",
+                    "    analytics_StudentDataAuthorization = Source{[Schema=\"analytics\",Item=\"StudentDataAuthorization\"]}[Data]",
+                    "in",
+                    "    analytics_StudentDataAuthorization"
+                  ]
+                }
+              }
+            ],
+            "measures": [
+              {
+                "name": "CurrentUserName",
+                "expression": "USERNAME()"
+              },
+              {
+                "name": "CurrentUserID",
+                "expression": "CALCULATE(FIRSTNONBLANK(User[UserKey],TRUE()),FILTER(User,User[UserEmail]=[CurrentUserName]))",
+                "isHidden": true
+              },
+              {
+                "name": "CurrentUserName2",
+                "expression": "\"aaron.baker@edfi.org\"",
+                "isHidden": true
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "name": "df7c91ab-75ad-4b07-89b8-e9c18697654d",
+            "fromTable": "UserAuthorization",
+            "fromColumn": "UserKey",
+            "toTable": "User",
+            "toColumn": "UserKey"
+          },
+          {
+            "name": "32ceaa6d-4c11-410f-935a-67c1a3e715bb",
+            "fromTable": "StudentSectionGradeFact",
+            "fromColumn": "GradingPeriodKey",
+            "toTable": "Grading Period",
+            "toColumn": "GradingPeriodKey"
+          },
+          {
+            "name": "eac28141-faa5-4265-bb53-6b6f1ad836b3",
+            "fromTable": "StudentSectionGradeFact",
+            "fromColumn": "StudentSectionKey",
+            "toTable": "Section",
+            "toColumn": "StudentSectionKey",
+            "crossFilteringBehavior": "bothDirections"
+          },
+          {
+            "name": "1ff6edb6-39f2-4eea-baab-2be23a28da0a",
+            "fromTable": "StudentDataAuthorization",
+            "fromColumn": "StudentKey",
+            "toTable": "Student",
+            "toColumn": "StudentKey",
+            "crossFilteringBehavior": "bothDirections",
+            "securityFilteringBehavior": "bothDirections"
+          },
+          {
+            "name": "ffa99f08-27d2-4bb1-9d3c-86db748bb828",
+            "fromTable": "Measures-EWS",
+            "fromColumn": "StudentEarlyWarningFact_StudentKey",
+            "toTable": "Student",
+            "toColumn": "StudentKey"
+          },
+          {
+            "name": "052ab196-84b4-4eea-8b93-458477189ac5",
+            "fromTable": "Measures-EWS",
+            "fromColumn": "StudentEarlyWarningFact_GradingPeriodKey",
+            "toTable": "Grading Period",
+            "toColumn": "GradingPeriodKey"
+          },
+          {
+            "name": "4ca77eb7-ab13-4bf7-9c25-82ec5280f65d",
+            "fromTable": "Student",
+            "fromColumn": "SchoolKey",
+            "toTable": "School",
+            "toColumn": "SchoolKey",
+            "crossFilteringBehavior": "bothDirections"
+          },
+          {
+            "name": "f781b6af-63bd-4916-9677-55852a4a0c97",
+            "fromTable": "StudentSectionGradeFact",
+            "fromColumn": "StudentKey",
+            "toTable": "Student",
+            "toColumn": "StudentKey",
+            "crossFilteringBehavior": "bothDirections"
+          }
+        ],
+        "roles": [
+          {
+            "name": "StudentRecordsAuth",
+            "modelPermission": "read",
+            "members": [
+              {
+                "memberName": "edfiewsstudentauth@domain.com",
+                "identityProvider": "AzureAD"
+              }
+            ],
+            "tablePermissions": [
+              {
+                "name": "StudentDataAuthorization",
+                "filterExpression": [
+                  "",
+                  "VAR CurrentUser = [CurrentUserID]",
+                  "VAR SchoolList =",
+                  "    CALCULATETABLE (",
+                  "        VALUES ( UserAuthorization[SchoolPermission] ),",
+                  "        FILTER ( User, User[UserKey] = CurrentUser )",
+                  "    )",
+                  "VAR SectionList =",
+                  "    CALCULATETABLE (",
+                  "        VALUES ( UserAuthorization[SectionPermission] ),",
+                  "        FILTER ( User, User[UserKey] = CurrentUser )",
+                  "    )",
+                  "RETURN",
+                  "    AND (",
+                  "        OR (",
+                  "            \"ALL\" IN SchoolList,",
+                  "            FORMAT ( StudentDataAuthorization[SchoolKey], \"General Number\" ) IN SchoolList",
+                  "        ),",
+                  "        OR ( \"ALL\" IN SectionList, StudentDataAuthorization[SectionId] IN SectionList )",
+                  "    )"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Role",
+            "modelPermission": "read",
+            "members": [
+              {
+                "memberName": "edfiewsreadall@domain.com",
+                "identityProvider": "AzureAD"
+              }
+            ]
+          }
+        ],
+        "expressions": [
+          {
+            "name": "Indicator Flags",
+            "kind": "m",
+            "expression": [
+              "let",
+              "    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(\"i45WMlLSUXIsUQjKLM5WitWJVjIE8l0Ti3IqFcITi/Iy89LBogZAUf88hZCixGSgslgA\", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type text) meta [Serialized.Text = true]) in type table [Value = _t, Indicator = _t]),",
+              "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"Value\", Int64.Type}, {\"Indicator\", type text}})",
+              "in",
+              "    #\"Changed Type\""
+            ]
+          },
+          {
+            "name": "CurrentDate",
+            "kind": "m",
+            "expression": [
+              "let",
+              "    Source = 20120515 meta [IsParameterQuery=true, Type=\"Any\", IsParameterQueryRequired=true]",
+              "in",
+              "    Source"
+            ]
+          }
+        ],
+        "annotations": [
+          {
+            "name": "ClientCompatibilityLevel",
+            "value": "500"
+          }
+        ]
+      }
+    }
+  }
+}
+
